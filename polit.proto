@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+option go_package = "protos/golang";
+option java_multiple_files = true;
+option java_package = "com.wanfangdata.tykd.polit";
+option java_outer_classname = "Polit";
+
+package polit;
+
+service Polit {
+    //创建api
+    rpc CreateApi(Api) returns (ApiDefinition);
+    //删除api
+    rpc DeleteApi(ID) returns (ApiDefinition);
+    //更新api
+    rpc UpdateApi(ApiDefinition) returns (ID);
+    //创建app
+    rpc CreateApp(App) returns (AppDefinition);
+    //删除app
+    rpc DeleteApp(ID) returns (AppDefinition);
+    //更新app
+    rpc UpdateApp(AppDefinition) returns (ID);
+    //刷新app密钥
+    rpc FlushAppSecret(ID) returns (AppDefinition);
+}   
+// 带*的字段是不可修改的
+message App {
+    string name = 1; //[必填]名称
+    string description = 2;//[可选]描述
+    string onwer_id = 5;//[必填]拥有者的id
+}
+
+message AppDefinition {
+    App app = 1;
+    string id = 2;//[必填]服务器生成的id
+    string secret = 3;//*服务器生成的密钥
+    int64 create_date = 4;//*创建时间
+    int64 update_date = 5;//*更新时间
+}
+
+message Api {
+    string name = 1; //[必填]名称
+    string description = 2;//[可选]描述
+    string listen_path = 3;//[必填]监听的地址
+    string target_url = 4;//[必填]目标服务的地址
+    string onwer_id = 5;//[必填]拥有者的id
+    string group_id = 6;//[必填]分组的id
+    string group_name = 7;//[必填]分组的名称
+    enum AUTH_MODE {
+        OPEN = 0;//[无签名]
+        APPID = 1;//[APPID 签名]
+        SIGNATURE = 2;//[SIGNATURE 签名]
+    }
+    AUTH_MODE auth_type = 8;//[可选]默认是无签名   
+}
+
+message ApiDefinition {
+    Api api = 1;//[必填]api的定义内容
+    string id = 2;//[必填]服务器端生成的id
+    int64 create_date = 3;//*创建时间
+    int64 update_date = 4;//*更新时间
+}
+
+message ID {
+    string id = 1;//[必填]api的id
+}
